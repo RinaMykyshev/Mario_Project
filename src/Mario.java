@@ -163,19 +163,19 @@ public class Mario implements Runnable {
 		while (true) {
 			if (isPaused) {
 				try {
-					Thread.sleep(50); 
+					Thread.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 				continue;
 			}
-					
+
 			if (!die) {
-				
+
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e) {
-					
+
 				}
 			} else {
 				boolean canleft = true;
@@ -192,7 +192,7 @@ public class Mario implements Runnable {
 						&& Background.Turtle.x + 50 > this.x
 						&& Background.Turtle.x - 50 < this.x
 						&& Background.Turtle.y + 50 > this.y
-						&& Background.Turtle.y - 50 < this.y) {					this.dead(); 
+						&& Background.Turtle.y - 50 < this.y) {					this.dead();
 				}
 				for (int i = 0; i < Background.obstraction.size(); i++) {
 					Enemy ob = Background.obstraction.get(i);
@@ -275,7 +275,7 @@ public class Mario implements Runnable {
  				for (int i = 0; i < this.Background.enemy.size(); i++) {
 					MoveEnemy e = (MoveEnemy) this.Background.enemy.get(i);					if (e.getX() + 50 > this.x && e.getX() - 50 < this.x
 							&& e.getY() + 50 > this.y && e.getY() - 50 < this.y) {
-						this.dead(); 
+						this.dead();
 					}
 					if (e.getY() == this.y + 60
 							&& (e.getX() + 60 > this.x && e.getX() - 60 < this.x)) {
@@ -283,7 +283,7 @@ public class Mario implements Runnable {
 							e.dead();
 							this.time = 10;
 							this.ymove = -5;						} else if (e.getType() == 2) {
-							this.dead(); 
+							this.dead();
 						}
 					}
 				}
@@ -301,16 +301,16 @@ public class Mario implements Runnable {
 	}
 
 	public boolean isOnGround() {
-		
+
 		return this.y >= 480;
 	}
 
-	private MyFrame myFrame; 
+	private MyFrame myFrame;
 
 	public void setMyFrame(MyFrame myFrame) {
 	    this.myFrame = myFrame;
 	}
-	
+
 	public void reset() {
 		this.die = true;
 		this.x = 0;
@@ -318,5 +318,7 @@ public class Mario implements Runnable {
 		this.status = "right-standing";
 		this.image = Staticvalues.mariao.get(0);
 		this.isPaused = false;
+		this.xmove = 0;
+		this.ymove = 0;
 	}
 }
