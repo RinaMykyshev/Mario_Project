@@ -30,7 +30,7 @@ public class Turtle implements Runnable {
         while (true) {
             if (isPaused) {
                 try {
-                    Thread.sleep(100); // Ждем, пока игра на паузе
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

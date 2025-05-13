@@ -2,8 +2,21 @@ package maria;
 
 import java.awt.Image;
 
-
 public class MoveEnemy implements Runnable {
+	private int x = 0;
+	private int y = 0;
+	private int startx;
+	private int starty;
+	private int type;
+	private Image image;
+	private int imagetype = 0;
+	private boolean isleftorup = true;
+	private int upmax = 0;
+	private int downmax = 0;
+	private Thread thread;
+	private Background Background;
+	private boolean isPaused = false;
+
 	public int getX() {
 		return x;
 	}
@@ -84,20 +97,6 @@ public class MoveEnemy implements Runnable {
 		this.thread = thread;
 	}
 
-	private int x = 0;
-	private int y = 0;
-	private int startx;
-	private int starty;
-	private int type;
-	private Image image;
-	private int imagetype = 0;
-	private boolean isleftorup = true;
-	private int upmax = 0;
-	private int downmax = 0;
-	private Thread thread;
-	private Background Background;
-	private boolean isPaused = false;
-
 	public Background getBackground() {
 		return Background;
 	}
@@ -105,82 +104,68 @@ public class MoveEnemy implements Runnable {
 	public void setBackground(Background Background) {
 		this.Background = Background;
 	}
-	public void dead(){
-		this.image= Staticvalues.trangel.get(2);
+
+	public void setPaused(boolean paused) {
+		this.isPaused = paused;
+	}
+
+	public void dead() {
+		this.image = Staticvalues.trangel.get(2);
 		this.Background.enemy.remove(this);
 		this.Background.remove.add(this);
 	}
-	public void setPaused(boolean paused) {
-	    this.isPaused = paused;
-	}
+
 	@Override
 	public void run() {
 		while (true) {
 			if (isPaused) {
 				try {
-					Thread.sleep(50); // Ждем, пока игра на паузе
+					Thread.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 				continue;
 			}
 
-			if (type == 1)
-			{
+			if (type == 1) {
 				if (this.isleftorup) {
 					this.x -= 3;
 				} else {
 					this.x += 3;
 				}
-				if (imagetype == 0) {
-					imagetype = 1;
-				} else {
-					imagetype = 0;
-				}
+
+				imagetype = (imagetype == 0) ? 1 : 0;
 				this.image = Staticvalues.trangel.get(imagetype);
-				boolean canLeft = true;
-				boolean canRight = true;
-			
-				boolean onLand = false;
+
 				for (int i = 0; i < this.Background.obstraction.size(); i++) {
 					Enemy ob = Background.obstraction.get(i);
-			
-					if (ob.getX() == this.x + 60
-							&& (ob.getY() + 50 > this.y && ob.getY() - 50 < this.y)) {
+
+					if (ob.getX() == this.x + 60 &&
+							(ob.getY() + 50 > this.y && ob.getY() - 50 < this.y)) {
 						isleftorup = true;
-					}
-					
-					if (ob.getX() == this.x - 60
-							&& (ob.getY() + 50 > this.y && ob.getY() - 50 < this.y)) {
-						isleftorup = false;
 					}
 
-				}
-				if(x < 0)
-				{
-					if(isleftorup == true)
-					{
+					if (ob.getX() == this.x - 60 &&
+							(ob.getY() + 50 > this.y && ob.getY() - 50 < this.y)) {
 						isleftorup = false;
-					}
-					else {
-						isleftorup = true;
 					}
 				}
 
-
+				if (x < 0) {
+					isleftorup = !isleftorup;
+				}
 			}
+
 			if (type == 2) {
 				if (this.isleftorup) {
 					this.y -= 3;
 				} else {
 					this.y += 3;
 				}
-				if (imagetype == 0) {
-					imagetype = 1;
-				} else {
-					imagetype = 0;
-				}
+
+				imagetype = (imagetype == 0) ? 1 : 0;
 				this.image = Staticvalues.flower.get(imagetype);
+
 				if (this.isleftorup && this.y <= this.upmax) {
 					this.isleftorup = false;
 				}
@@ -192,13 +177,11 @@ public class MoveEnemy implements Runnable {
 			try {
 				Thread.sleep(50);
 			} catch (Exception e) {
-				
 			}
 		}
 	}
 
 	public void reset() {
-
 	}
 
 	public MoveEnemy(int x, int y, boolean isleft, int type, Background Background) {
@@ -213,7 +196,6 @@ public class MoveEnemy implements Runnable {
 		thread = new Thread(this);
 		thread.start();
 	}
-
 
 	public MoveEnemy(int x, int y, boolean isup, int type, int upmax,
 					 int downmax, Background Background) {

@@ -27,7 +27,6 @@ public class MyFrame extends JFrame implements Runnable {
 
 	private Clip backgroundClip;
 
-	// Диалоговое окно для проигрыша
 	private JDialog gameOverDialog;
 
 	public MyFrame() {
@@ -42,7 +41,7 @@ public class MyFrame extends JFrame implements Runnable {
 		this.Backgroundnow = Backgrounds.get(0);
 		mario = new Mario(0, 480);
 		mario.setBackground(Backgroundnow);
-		mario.setMyFrame(this); // Устанавливаем ссылку на MyFrame
+		mario.setMyFrame(this);
 		this.repaint();
 		this.addKeyListener(new key());
 		Thread thread = new Thread(this);
@@ -50,7 +49,7 @@ public class MyFrame extends JFrame implements Runnable {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 		this.setResizable(false);
-		// Создаем диалоговое окно "Игра окончена"
+
 		createGameOverDialog();
 		playBackgroundSound("sounds/background.wav");
 	}
@@ -61,7 +60,7 @@ public class MyFrame extends JFrame implements Runnable {
 				BufferedImage.TYPE_3BYTE_BGR);
 		Graphics graphics2 = bufferedImage.getGraphics();
 		graphics2.drawImage(this.Backgroundnow.getBackgroundImage(), 0, 0, this);
-		
+
 		java.util.Iterator<MoveEnemy> iterator2 = this.Backgroundnow.enemy
 				.iterator();
 		while(iterator2.hasNext())
@@ -69,7 +68,7 @@ public class MyFrame extends JFrame implements Runnable {
 			MoveEnemy moveenemy = iterator2.next();
 			graphics2.drawImage(moveenemy.getImage(), moveenemy.getX(), moveenemy.getY(), this);
 		}
-	
+
 		java.util.Iterator<Enemy> iterator = this.Backgroundnow.obstraction
 				.iterator();
 		while (iterator.hasNext())
@@ -89,9 +88,9 @@ public class MyFrame extends JFrame implements Runnable {
 	class key implements KeyListener {
 
 		private boolean jumpSoundPlayed = false;
-		private boolean isJumping = false; // Новый флаг для отслеживания состояния прыжка
-		// Флаг для контроля состояния меню
-		private JDialog menuDialog; // Диалоговое окно для меню
+		private boolean isJumping = false;
+
+		private JDialog menuDialog;
 
 		public key() {
 			// Инициализация меню
@@ -121,7 +120,7 @@ public class MyFrame extends JFrame implements Runnable {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if (isPaused) {
-				return; // Если игра на паузе, игнорируем нажатия клавиш
+				return;
 			}
 			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 				MyFrame.this.mario.rightMove();
@@ -129,22 +128,22 @@ public class MyFrame extends JFrame implements Runnable {
 			if (e.getKeyCode() == 37) {
 				MyFrame.this.mario.leftMove();
 			}
-			if (e.getKeyCode() == 32 && !jumpSoundPlayed && !isJumping) { // Проверяем, не в прыжке ли персонаж
+			if (e.getKeyCode() == 32 && !jumpSoundPlayed && !isJumping) {
 				MyFrame.this.mario.jump();
 				playSound("sounds/jump.wav");
 				jumpSoundPlayed = true;
-				isJumping = true; // Устанавливаем флаг прыжка
+				isJumping = true;
 			}
-			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { // Обработка нажатия Esc
-				// Переключаем состояние паузы для всех объектов игры
+			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+
 				setGamePaused(!isPaused);
-				
+
 				if (isPaused) {
-					pauseBackgroundMusic(); // Останавливаем музыку
-					menuDialog.setVisible(true); // Показываем меню, если игра на паузе
+					pauseBackgroundMusic();
+					menuDialog.setVisible(true);
 				} else {
-					resumeBackgroundMusic(); // Возобновляем музыку
-					menuDialog.setVisible(false); // Скрываем меню, если игра продолжается
+					resumeBackgroundMusic();
+					menuDialog.setVisible(false);
 				}
 			}
 		}
@@ -162,7 +161,7 @@ public class MyFrame extends JFrame implements Runnable {
 			}
 		}
 
-		public void setJumping(boolean jumping) { // Метод для сброса состояния прыжка
+		public void setJumping(boolean jumping) {
 			this.isJumping = jumping;
 		}
 	}
@@ -170,14 +169,14 @@ public class MyFrame extends JFrame implements Runnable {
 		new MyFrame();
 	}
 
-	private boolean isPaused = false; // Флаг для отслеживания состояния паузы
+	private boolean isPaused = false;
 
 	@Override
 	public void run() {
 		while (true) {
 			if (isPaused) {
 				try {
-					Thread.sleep(50); // Ждем, пока игра на паузе
+					Thread.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -193,7 +192,7 @@ public class MyFrame extends JFrame implements Runnable {
 					mario.setX(0);
 					mario.setY(480);
 				}
-				// Сбрасываем флаг прыжка, если персонаж завершил прыжок
+
 				if (mario.isOnGround()) {
 					((key) this.getKeyListeners()[0]).setJumping(false);
 				}
@@ -202,7 +201,7 @@ public class MyFrame extends JFrame implements Runnable {
 			}
 		}
 	}
-	
+
 	private void playSound(String soundFilePath) {
 	    try {
 	        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(soundFilePath).getAbsoluteFile());
@@ -242,23 +241,20 @@ public class MyFrame extends JFrame implements Runnable {
 	        e.printStackTrace();
 	    }
 	}
-	// Метод для установки паузы для всех объектов игры
 	private void setGamePaused(boolean paused) {
 	    try {
-	        // Устанавливаем флаг паузы для основного потока
+
 	        isPaused = paused;
-	        
-	        // Передаем состояние паузы персонажу
+
 	        if (mario != null) {
 	            mario.setPaused(paused);
 	        }
-	        
-	        // Передаем состояние паузы черепахе
+
 	        if (Backgroundnow != null && Backgroundnow.Turtle != null) {
 	            Backgroundnow.Turtle.setPaused(paused);
 	        }
-	        
-	        // Передаем состояние паузы движущимся врагам
+
+
 	        if (Backgroundnow != null && Backgroundnow.enemy != null) {
 	            for (Object enemy : Backgroundnow.enemy) {
 	                if (enemy instanceof MoveEnemy) {
@@ -266,8 +262,6 @@ public class MyFrame extends JFrame implements Runnable {
 	                }
 	            }
 	        }
-	        
-	        // Управление музыкой
 	        if (paused) {
 	            pauseBackgroundMusic();
 	        } else {
@@ -276,108 +270,62 @@ public class MyFrame extends JFrame implements Runnable {
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-	}	// Метод для перезапуска игры с пересозданием всех потоков
+	}
 	private void restartGame() {
-	    try {
-	        // Останавливаем всех врагов и персонажа
-	        setGamePaused(true);
-	        
-	        // Останавливаем старые потоки
-	        if (mario != null && mario.thread != null) {
-	            try {
-	                mario.thread.interrupt();
-	            } catch (Exception ex) {
-	                // Игнорируем ошибки при остановке потоков
-	            }
-	        }
-	        
-	        // Останавливаем музыку полностью (закрываем старый клип)
-	        if (backgroundClip != null) {
-	            try {
-	                backgroundClip.stop();
-	                backgroundClip.close();
-	                backgroundClip = null;
-	            } catch (Exception ex) {
-	                // Игнорируем ошибки при закрытии аудио
-	                backgroundClip = null;
-	            }
-	        }
-	        
-	        // Останавливаем врагов и другие потоки
-	        if (Backgroundnow != null && Backgroundnow.enemy != null) {
-	            for (Object enemy : Backgroundnow.enemy) {
-	                if (enemy instanceof MoveEnemy) {                    MoveEnemy moveEnemy = (MoveEnemy) enemy;
-	                    if (moveEnemy.getThread() != null) {
-	                        try {
-	                            moveEnemy.getThread().interrupt();
-	                        } catch (Exception ex) {
-	                            // Игнорируем ошибки
-	                        }
-	                    }
-	                }
-	            }
-	        }
-	        
-	        // Останавливаем черепаху, если она есть
-	        if (Backgroundnow != null && Backgroundnow.Turtle != null) {
-	            if (Backgroundnow.Turtle.thread != null) {
-	                try {
-	                    Backgroundnow.Turtle.thread.interrupt();
-	                } catch (Exception ex) {
-	                    // Игнорируем ошибки
-	                }
-	            }
-	        }
-	        
-	        // Полностью пересоздаем игровую сцену
-	        Staticvalues.init(); // Перезагружаем статические значения
-	        
-	        // Пересоздаем первый фон
-	        Backgroundnow = new Background(0, false);
-	        
-	        // Пересоздаем все фоны
-	        Backgrounds.clear();
-	        for (int i = 1; i <= 3; i++) {
-	            this.Backgrounds.add(new Background(i, i == 3 ? true : false));
-	        }
-	        
-	        // Создаем нового персонажа
-	        mario = new Mario(0, 480);
-	        mario.setBackground(Backgroundnow);
-	        mario.setMyFrame(this); // Устанавливаем ссылку на MyFrame
-	        mario.die = true; // Сбрасываем флаг смерти персонажа
-	        
-	        // Запускаем музыку заново
-	        playBackgroundSound("sounds/background.wav");
-	        
-	        // Убираем паузу
-	        setGamePaused(false);
-	        
-	        // Перерисовываем игру
-	        this.repaint();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	}// Метод для отображения меню проигрыша
+		try {
+			setGamePaused(true);
+
+			if (Backgroundnow != null) {
+				Backgroundnow.enemy.clear();
+				Backgroundnow.obstraction.clear();
+				Backgroundnow.removedenemy.clear();
+				Backgroundnow.remove.clear();
+				Backgroundnow.Turtle = null;
+			}
+
+			// Останавливаем музыку
+			if (backgroundClip != null) {
+				backgroundClip.stop();
+				backgroundClip.close();
+				backgroundClip = null;
+			}
+
+			Staticvalues.init();
+
+			Backgrounds.clear();
+			for (int i = 1; i <= 3; i++) {
+				this.Backgrounds.add(new Background(i, i == 3));
+			}
+			Backgroundnow = Backgrounds.get(0);
+
+			mario = new Mario(0, 480);
+			mario.setBackground(Backgroundnow);
+			mario.setMyFrame(this);
+
+			playBackgroundSound("sounds/background.wav");
+
+			setGamePaused(false);
+
+
+			this.repaint();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	public void gameOver() {
-	    // Останавливаем все процессы игры
 	    setGamePaused(true);
-	    
-	    // Останавливаем музыку
+
 	    pauseBackgroundMusic();
-	    
-	    // Показываем диалоговое окно проигрыша
-	    gameOverDialog.setLocationRelativeTo(this); // Центрируем диалог
+
+	    gameOverDialog.setLocationRelativeTo(this);
 	    gameOverDialog.setVisible(true);
 	}
-	// Метод для создания диалога "Игра окончена"
 	private void createGameOverDialog() {
 	    gameOverDialog = new JDialog(this, "Игра окончена", true);
 	    gameOverDialog.setSize(300, 150);
 	    gameOverDialog.setLayout(new BoxLayout(gameOverDialog.getContentPane(), BoxLayout.Y_AXIS));
 	    gameOverDialog.setLocationRelativeTo(this);
-	    
-	    // Предотвращаем закрытие диалога по нажатию на крестик
+
 	    gameOverDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
 	    JButton restartButton = new JButton("Играть заново");
@@ -392,5 +340,4 @@ public class MyFrame extends JFrame implements Runnable {
 	    gameOverDialog.add(restartButton);
 	    gameOverDialog.add(exitButton);
 	}
-	// Убран метод для отображения экрана проигрыша
 }
