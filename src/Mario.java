@@ -1,5 +1,3 @@
-package maria;
-
 import java.awt.Image;
 
 public class Mario implements Runnable {
@@ -115,18 +113,53 @@ public class Mario implements Runnable {
 		this.status = "right-standing";
 	}
 
-	public void jump() {
-		if (isPaused) return; 
-		if (this.status.indexOf("jumping") == -1) {
-			if (this.status.indexOf("left") != -1) {
-				this.status = "left-jumping";
-			} else {
-				this.status = "right-jumping";
-			}
-			ymove = -10;
-			time = 18;
-		}
+	private boolean isOnGround = true; // Переменная для отслеживания состояния "на земле"
+
+	public boolean isOnGround() {
+
+		return this.y >= 480;
 	}
+
+	public boolean isOnBlock() {
+        for (Enemy ob : Background.obstraction) {
+            if (this.y + 60 == ob.getY() && // Проверка, находится ли персонаж на блоке по вертикали
+                this.x + 50 > ob.getX() &&  // Проверка пересечения по горизонтали
+                this.x < ob.getX() + 50) { // Проверка пересечения по горизонтали
+                return true;
+            }
+        }
+        return false;
+    }
+
+	public boolean isOnSurface() {
+        // Проверяем, находится ли персонаж на земле
+        if (this.y + 60 >= 480) { // 480 — уровень земли
+            return true;
+        }
+
+        // Проверяем, находится ли персонаж на блоке
+        for (Enemy ob : Background.obstraction) {
+            if (this.y + 60 == ob.getY() && // Проверка по вертикали
+                this.x + 50 > ob.getX() &&  // Проверка пересечения по горизонтали
+                this.x < ob.getX() + 50) { // Проверка пересечения по горизонтали
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void jump() {
+        if (isPaused) return; 
+        if ((this.status.indexOf("jumping") == -1) && isOnSurface()) {
+            if (this.status.indexOf("left") != -1) {
+                this.status = "left-jumping";
+            } else {
+                this.status = "right-jumping";
+            }
+            ymove = -10;
+            time = 18;
+        }
+    }
 
 	public void down() {
 		if (this.status.indexOf("left") != -1) {
@@ -169,6 +202,9 @@ public class Mario implements Runnable {
 				}
 				continue;
 			}
+
+			// Обновляем состояние "на земле"
+            isOnGround = (this.y >= 480); // Пример: если персонаж на уровне земли
 
 			if (!die) {
 
@@ -298,11 +334,6 @@ public class Mario implements Runnable {
 				}
 			}
 		}
-	}
-
-	public boolean isOnGround() {
-
-		return this.y >= 480;
 	}
 
 	private MyFrame myFrame;

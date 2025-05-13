@@ -1,5 +1,3 @@
-package maria;
-
 import java.awt.Image;
 
 public class Turtle implements Runnable {

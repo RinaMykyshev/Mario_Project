@@ -1,5 +1,3 @@
-package maria;
-
 import java.awt.Image;
 
 public class MoveEnemy implements Runnable {
