@@ -75,7 +75,7 @@ public class Mario implements Runnable {
 	public Mario(int x, int y) {
 		this.x = x;
 		this.y = y;
- 		image = Staticvalues.mariao.get(0);
+		image = Staticvalues.mariao.get(0);
 		this.score = 0;
 		this.lift = 3;
 		this.status = "right-standing";
@@ -83,83 +83,75 @@ public class Mario implements Runnable {
 		thread.start();
 	}
 
-	private boolean isPaused = false; 
+	private boolean isPaused = false;
 
 	public void setPaused(boolean paused) {
-	    this.isPaused = paused;
+		this.isPaused = paused;
 	}
 
 	public void leftMove() {
-		if (isPaused) return; 
+		if (isPaused) return;
 		xmove = -5;
 		this.status = "left-moving";
 	}
 
 	public void rightMove() {
-		if (isPaused) return; 
+		if (isPaused) return;
 		xmove = 5;
 		this.status = "right-moving";
 	}
 
 	public void leftstop() {
-		if (isPaused) return; 
+		if (isPaused) return;
 		xmove = 0;
 		this.status = "left-standing";
 	}
 
 	public void rightstop() {
-		if (isPaused) return; 
+		if (isPaused) return;
 		xmove = 0;
 		this.status = "right-standing";
 	}
 
-	private boolean isOnGround = true; // Переменная для отслеживания состояния "на земле"
+	private boolean isOnGround = true;
 
 	public boolean isOnGround() {
-
 		return this.y >= 480;
 	}
 
-	public boolean isOnBlock() {
-        for (Enemy ob : Background.obstraction) {
-            if (this.y + 60 == ob.getY() && // Проверка, находится ли персонаж на блоке по вертикали
-                this.x + 50 > ob.getX() &&  // Проверка пересечения по горизонтали
-                this.x < ob.getX() + 50) { // Проверка пересечения по горизонтали
-                return true;
-            }
-        }
-        return false;
-    }
-
 	public boolean isOnSurface() {
-        // Проверяем, находится ли персонаж на земле
-        if (this.y + 60 >= 480) { // 480 — уровень земли
-            return true;
-        }
+		if (this.y + 60 >= 480) {
+			System.out.println("On ground: y = " + y);
+			return true;
+		}
+		for (Enemy ob : Background.obstraction) {
+			System.out.println("Checking block: y = " + ob.getY() + ", x = " + ob.getX());
+			if (this.y + 60 >= ob.getY() && this.y + 60 <= ob.getY() + 10 &&
+					this.x + 50 > ob.getX() &&
+					this.x < ob.getX() + 50) {
+				System.out.println("On block: Mario y = " + y + ", block y = " + ob.getY() + ", block x = " + ob.getX() + ", Mario x = " + x);
+				return true;
+			}
+		}
+		System.out.println("Not on surface: y = " + y);
+		return false;
+	}
 
-        // Проверяем, находится ли персонаж на блоке
-        for (Enemy ob : Background.obstraction) {
-            if (this.y + 60 == ob.getY() && // Проверка по вертикали
-                this.x + 50 > ob.getX() &&  // Проверка пересечения по горизонтали
-                this.x < ob.getX() + 50) { // Проверка пересечения по горизонтали
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void jump() {
-        if (isPaused) return; 
-        if ((this.status.indexOf("jumping") == -1) && isOnSurface()) {
-            if (this.status.indexOf("left") != -1) {
-                this.status = "left-jumping";
-            } else {
-                this.status = "right-jumping";
-            }
-            ymove = -10;
-            time = 18;
-        }
-    }
+	public void jump() {
+		if (isPaused) return;
+		if ((this.status.indexOf("jumping") == -1) && isOnSurface()) {
+			if (this.status.indexOf("left") != -1) {
+				this.status = "left-jumping";
+			} else {
+				this.status = "right-jumping";
+			}
+			ymove = -10;
+			time = 18;
+			System.out.println("Jump initiated: status = " + status + ", y = " + y + ", isOnSurface = " + isOnSurface());
+		} else {
+			System.out.println("Jump blocked: status = " + status + ", isOnSurface = " + isOnSurface());
+		}
+	}
 
 	public void down() {
 		if (this.status.indexOf("left") != -1) {
@@ -170,27 +162,23 @@ public class Mario implements Runnable {
 		ymove = 10;
 	}
 
-	public boolean die = true;	public void dead() {
+	public boolean die = true;
+	public void dead() {
 		this.image = Staticvalues.die;
-		
-		
 		isPaused = true;
 		die = false;
-		
-		
 		if (myFrame != null) {
-			
-			
 			new Thread(() -> {
 				try {
-					Thread.sleep(500); 
-					myFrame.gameOver(); 
+					Thread.sleep(500);
+					myFrame.gameOver();
 				} catch (InterruptedException e) {
-					
+					e.printStackTrace();
 				}
 			}).start();
 		}
 	}
+
 	@Override
 	public void run() {
 		while (true) {
@@ -203,15 +191,13 @@ public class Mario implements Runnable {
 				continue;
 			}
 
-			// Обновляем состояние "на земле"
-            isOnGround = (this.y >= 480); // Пример: если персонаж на уровне земли
+			isOnGround = (this.y >= 480);
 
 			if (!die) {
-
 				try {
 					Thread.sleep(50);
 				} catch (InterruptedException e) {
-
+					e.printStackTrace();
 				}
 			} else {
 				boolean canleft = true;
@@ -228,37 +214,37 @@ public class Mario implements Runnable {
 						&& Background.Turtle.x + 50 > this.x
 						&& Background.Turtle.x - 50 < this.x
 						&& Background.Turtle.y + 50 > this.y
-						&& Background.Turtle.y - 50 < this.y) {					this.dead();
+						&& Background.Turtle.y - 50 < this.y) {
+					this.dead();
 				}
 				for (int i = 0; i < Background.obstraction.size(); i++) {
 					Enemy ob = Background.obstraction.get(i);
- 					if ((ob.getX() == this.x + 50)
+					if ((ob.getX() == this.x + 50)
 							&& (ob.getY() + 50 > this.y && ob.getY() - 50 < this.y)) {
 						canright = false;
 					}
- 					if ((ob.getX() == this.x - 50)
+					if ((ob.getX() == this.x - 50)
 							&& (ob.getY() + 50 > this.y && ob.getY() - 50 < this.y)) {
 						canleft = false;
 					}
- 					if (ob.getY() == this.y + 50 && ob.getX() + 50 > this.x
+					if (ob.getY() == this.y + 50 && ob.getX() + 50 > this.x
 							&& ob.getX() - 50 < this.x) {
 						jumb = true;
 					}
- 					if (ob.getY() == this.y - 60
+					if (ob.getY() == this.y - 60
 							&& (ob.getX() + 50 > this.x && ob.getX() - 50 < this.x)) {
- 						if (ob.getType() == 0) {
+						if (ob.getType() == 0) {
 							this.Background.obstraction.remove(ob);
 							this.Background.removedenemy.add(ob);
 						}
-
- 						if (ob.getType() == 4 || ob.getType() == 3 && time > 0) {
+						if (ob.getType() == 4 || ob.getType() == 3 && time > 0) {
 							ob.setType(2);
 							ob.setImage();
 						}
-
 						time = 0;
+						ymove = 0;
+						System.out.println("Hit block: setting time = 0, ymove = 0, status = " + status + ", y = " + y);
 					}
-
 				}
 				if (jumb && time == 0) {
 					if (this.status.indexOf("left") != -1) {
@@ -274,8 +260,10 @@ public class Mario implements Runnable {
 							status = "right-standing";
 						}
 					}
+					ymove = 0;
+					System.out.println("Jump ended: status = " + status + ", y = " + y + ", ymove = " + ymove);
 				} else {
- 					if (time != 0) {
+					if (time != 0) {
 						time -= 1;
 					} else {
 						this.down();
@@ -291,10 +279,10 @@ public class Mario implements Runnable {
 					}
 				}
 				int temp = 0;
- 				if (this.status.indexOf("left") != -1) {
+				if (this.status.indexOf("left") != -1) {
 					temp += 5;
 				}
- 				if (this.status.indexOf("moving") != -1) {
+				if (this.status.indexOf("moving") != -1) {
 					temp += p;
 					if (a % 4 == 1) {
 						p++;
@@ -308,8 +296,9 @@ public class Mario implements Runnable {
 				}
 				this.image = Staticvalues.mariao.get(temp);
 				a++;
- 				for (int i = 0; i < this.Background.enemy.size(); i++) {
-					MoveEnemy e = (MoveEnemy) this.Background.enemy.get(i);					if (e.getX() + 50 > this.x && e.getX() - 50 < this.x
+				for (int i = 0; i < this.Background.enemy.size(); i++) {
+					MoveEnemy e = (MoveEnemy) this.Background.enemy.get(i);
+					if (e.getX() + 50 > this.x && e.getX() - 50 < this.x
 							&& e.getY() + 50 > this.y && e.getY() - 50 < this.y) {
 						this.dead();
 					}
@@ -318,19 +307,19 @@ public class Mario implements Runnable {
 						if (e.getType() == 1) {
 							e.dead();
 							this.time = 10;
-							this.ymove = -5;						} else if (e.getType() == 2) {
+							this.ymove = -5;
+						} else if (e.getType() == 2) {
 							this.dead();
 						}
 					}
 				}
 				try {
 					Thread.sleep(50);
-
 					if (a == 100) {
 						a = 0;
 					}
 				} catch (InterruptedException e) {
-				 e.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 		}
@@ -339,7 +328,7 @@ public class Mario implements Runnable {
 	private MyFrame myFrame;
 
 	public void setMyFrame(MyFrame myFrame) {
-	    this.myFrame = myFrame;
+		this.myFrame = myFrame;
 	}
 
 	public void reset() {
