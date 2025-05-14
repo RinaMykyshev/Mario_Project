@@ -1,23 +1,26 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
-
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-import java.io.File;
-import java.io.IOException;
-
-public class MyFrame extends JFrame implements Runnable {
+public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 
 	private ArrayList<Background> Backgrounds = new ArrayList<>();
 	private Background Backgroundnow = null;
@@ -26,11 +29,58 @@ public class MyFrame extends JFrame implements Runnable {
 	private Clip backgroundClip;
 
 	private JDialog gameOverDialog;
+	private JDialog gameWinDialog;
+	private JLabel scoreLabel;
+	private JPanel gamePanel;
 
 	public MyFrame() {
-		this.setTitle("É½Õ¯ÂíÀï°Â");
+		this.setTitle("Super Mario");
 		this.setSize(900, 600);
 		this.setLocationRelativeTo(null);
+		
+		// Основная панель с LayeredPane для поддержки слоев
+		this.setLayout(new BorderLayout());
+		javax.swing.JLayeredPane layeredPane = new javax.swing.JLayeredPane();
+		this.add(layeredPane, BorderLayout.CENTER);
+		layeredPane.setPreferredSize(new java.awt.Dimension(900, 600));
+		
+		// Создаем игровую панель
+		gamePanel = new JPanel() {
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				paintGame(g);
+			}
+		};
+		gamePanel.setBounds(0, 0, 900, 600);
+		gamePanel.setOpaque(true);
+		layeredPane.add(gamePanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+		// Создаем панель с полупрозрачным фоном для счета
+		JPanel scorePanel = new JPanel() {
+			@Override
+			protected void paintComponent(Graphics g) {
+				g.setColor(new Color(0, 0, 0, 128));
+				g.fillRect(0, 0, getWidth(), getHeight());
+				super.paintComponent(g);
+			}
+		};
+		scorePanel.setOpaque(false);
+		scorePanel.setBounds(10, 10, 120, 40);
+		scorePanel.setLayout(new BorderLayout());
+		
+		// Создаем и настраиваем метку для счета
+		scoreLabel = new JLabel("Score: 0");
+		scoreLabel.setForeground(Color.WHITE);
+		scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
+		scoreLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+		
+		scorePanel.add(scoreLabel, BorderLayout.CENTER);
+		layeredPane.add(scorePanel, javax.swing.JLayeredPane.POPUP_LAYER);
+		
+		// Регистрируем окно как наблюдателя за счетом
+		ScoreManager.getInstance().addObserver(this);
+		
 		Staticvalues.init();
 		Backgroundnow = new Background(0, false);
 		for (int i = 1; i <= 3; i++) {
@@ -49,11 +99,12 @@ public class MyFrame extends JFrame implements Runnable {
 		this.setResizable(false);
 
 		createGameOverDialog();
+		createGameWinDialog();
 		playBackgroundSound("sounds/background.wav");
 	}
 
-	@Override
-	public void paint(Graphics graphics) {
+	// Метод для отрисовки игры
+	private void paintGame(Graphics graphics) {
 		BufferedImage bufferedImage = new BufferedImage(900, 600,
 				BufferedImage.TYPE_3BYTE_BGR);
 		Graphics graphics2 = bufferedImage.getGraphics();
@@ -75,12 +126,20 @@ public class MyFrame extends JFrame implements Runnable {
 			graphics2.drawImage(obstraction.getImage(), obstraction.getX(),
 					obstraction.getY(), this);
 		}
-       if(Backgroundnow.Turtle != null)
-       {
-	   graphics2.drawImage(Backgroundnow.Turtle.image,Backgroundnow.Turtle.x,Backgroundnow.Turtle.y,this);
-       }
+		if(Backgroundnow.Turtle != null)
+		{
+			graphics2.drawImage(Backgroundnow.Turtle.image,Backgroundnow.Turtle.x,Backgroundnow.Turtle.y,this);
+		}
 		graphics2.drawImage(mario.getImage(), mario.getX(), mario.getY(), this);
 		graphics.drawImage(bufferedImage, 0, 0, this);
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+		if (gamePanel != null) {
+			gamePanel.repaint();
+		}
 	}
 
 	class key implements KeyListener {
@@ -184,7 +243,10 @@ public class MyFrame extends JFrame implements Runnable {
 			this.repaint();
 			try {
 				Thread.sleep(50);
-				if (mario.getX() >= 840) {
+				// Победа на последней карте по координате столба
+				if (Backgroundnow.isFlag() && mario.getX() >= 690) {
+					gameWin();
+				} else if (mario.getX() >= 840) {
 					this.Backgroundnow = Backgrounds.get(this.Backgroundnow.getSort());
 					mario.setBackground(Backgroundnow);
 					mario.setX(0);
@@ -192,10 +254,7 @@ public class MyFrame extends JFrame implements Runnable {
 				}
 
 				if (mario.isOnSurface()) {
-					System.out.println("Mario on surface, resetting isJumping. y = " + mario.getY() + ", isOnSurface = " + mario.isOnSurface());
 					((key) this.getKeyListeners()[0]).setJumping(false);
-				} else {
-					System.out.println("Mario NOT on surface. y = " + mario.getY() + ", isOnSurface = " + mario.isOnSurface());
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -290,6 +349,9 @@ public class MyFrame extends JFrame implements Runnable {
 				backgroundClip = null;
 			}
 
+			// Сброс счета при перезапуске игры
+			ScoreManager.getInstance().resetScore();
+
 			Staticvalues.init();
 
 			Backgrounds.clear();
@@ -339,5 +401,37 @@ public class MyFrame extends JFrame implements Runnable {
 
 	    gameOverDialog.add(restartButton);
 	    gameOverDialog.add(exitButton);
+	}
+	private void createGameWinDialog() {
+	    gameWinDialog = new JDialog(this, "Победа!", true);
+	    gameWinDialog.setSize(300, 150);
+	    gameWinDialog.setLayout(new BoxLayout(gameWinDialog.getContentPane(), BoxLayout.Y_AXIS));
+	    gameWinDialog.setLocationRelativeTo(this);
+
+	    gameWinDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
+	    JButton restartButton = new JButton("Играть заново");
+	    restartButton.addActionListener(e -> {
+	        gameWinDialog.setVisible(false);
+	        restartGame();
+	    });
+
+	    JButton exitButton = new JButton("Выход из игры");
+	    exitButton.addActionListener(e -> System.exit(0));
+
+	    gameWinDialog.add(restartButton);
+	    gameWinDialog.add(exitButton);
+	}
+	public void gameWin() {
+	    setGamePaused(true);
+	    pauseBackgroundMusic();
+	    playSound("sounds/victory.wav");
+	    gameWinDialog.setLocationRelativeTo(this);
+	    gameWinDialog.setVisible(true);
+	}
+
+	@Override
+	public void onScoreChanged(int newScore) {
+		scoreLabel.setText("Score: " + newScore);
 	}
 }

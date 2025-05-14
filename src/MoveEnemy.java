@@ -179,9 +179,6 @@ public class MoveEnemy implements Runnable {
 		}
 	}
 
-	public void reset() {
-	}
-
 	public MoveEnemy(int x, int y, boolean isleft, int type, Background Background) {
 		this.x = x;
 		this.y = y;
