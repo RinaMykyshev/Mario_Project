@@ -91,16 +91,16 @@ public class MyFrame extends JFrame implements Runnable {
 		private JDialog menuDialog;
 
 		public key() {
-			// Инициализация меню
+
 			menuDialog = new JDialog(MyFrame.this, "Меню", true);
 			menuDialog.setSize(300, 200);
 			menuDialog.setLayout(new BoxLayout(menuDialog.getContentPane(), BoxLayout.Y_AXIS));
 			menuDialog.setLocationRelativeTo(MyFrame.this);
 
 			JButton continueButton = new JButton("Продолжить игру");			continueButton.addActionListener(e -> {
-				setGamePaused(false); // Снимаем все объекты игры с паузы
+				setGamePaused(false);
 				menuDialog.setVisible(false);
-				resumeBackgroundMusic(); // Возобновляем музыку
+				resumeBackgroundMusic();
 			});
 
 			JButton exitButton = new JButton("Выход из игры");
@@ -191,11 +191,14 @@ public class MyFrame extends JFrame implements Runnable {
 					mario.setY(480);
 				}
 
-				if (mario.isOnGround()) {
+				if (mario.isOnSurface()) {
+					System.out.println("Mario on surface, resetting isJumping. y = " + mario.getY() + ", isOnSurface = " + mario.isOnSurface());
 					((key) this.getKeyListeners()[0]).setJumping(false);
+				} else {
+					System.out.println("Mario NOT on surface. y = " + mario.getY() + ", isOnSurface = " + mario.isOnSurface());
 				}
 			} catch (InterruptedException e) {
-			 e.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 	}
@@ -281,7 +284,6 @@ public class MyFrame extends JFrame implements Runnable {
 				Backgroundnow.Turtle = null;
 			}
 
-			// Останавливаем музыку
 			if (backgroundClip != null) {
 				backgroundClip.stop();
 				backgroundClip.close();
