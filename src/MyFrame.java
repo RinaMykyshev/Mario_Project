@@ -37,14 +37,12 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 		this.setTitle("Super Mario");
 		this.setSize(900, 600);
 		this.setLocationRelativeTo(null);
-		
-		// Основная панель с LayeredPane для поддержки слоев
+
 		this.setLayout(new BorderLayout());
 		javax.swing.JLayeredPane layeredPane = new javax.swing.JLayeredPane();
 		this.add(layeredPane, BorderLayout.CENTER);
 		layeredPane.setPreferredSize(new java.awt.Dimension(900, 600));
-		
-		// Создаем игровую панель
+
 		gamePanel = new JPanel() {
 			@Override
 			protected void paintComponent(Graphics g) {
@@ -56,7 +54,6 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 		gamePanel.setOpaque(true);
 		layeredPane.add(gamePanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
-		// Создаем панель с полупрозрачным фоном для счета
 		JPanel scorePanel = new JPanel() {
 			@Override
 			protected void paintComponent(Graphics g) {
@@ -69,7 +66,6 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 		scorePanel.setBounds(10, 10, 120, 40);
 		scorePanel.setLayout(new BorderLayout());
 		
-		// Создаем и настраиваем метку для счета
 		scoreLabel = new JLabel("Score: 0");
 		scoreLabel.setForeground(Color.WHITE);
 		scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
@@ -78,7 +74,6 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 		scorePanel.add(scoreLabel, BorderLayout.CENTER);
 		layeredPane.add(scorePanel, javax.swing.JLayeredPane.POPUP_LAYER);
 		
-		// Регистрируем окно как наблюдателя за счетом
 		ScoreManager.getInstance().addObserver(this);
 		
 		Staticvalues.init();
@@ -103,7 +98,6 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 		playBackgroundSound("sounds/background.wav");
 	}
 
-	// Метод для отрисовки игры
 	private void paintGame(Graphics graphics) {
 		BufferedImage bufferedImage = new BufferedImage(900, 600,
 				BufferedImage.TYPE_3BYTE_BGR);
@@ -243,7 +237,6 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 			this.repaint();
 			try {
 				Thread.sleep(50);
-				// Победа на последней карте по координате столба
 				if (Backgroundnow.isFlag() && mario.getX() >= 690) {
 					gameWin();
 				} else if (mario.getX() >= 840) {
@@ -349,7 +342,7 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 				backgroundClip = null;
 			}
 
-			// Сброс счета при перезапуске игры
+
 			ScoreManager.getInstance().resetScore();
 
 			Staticvalues.init();
