@@ -12,8 +12,7 @@ public class MoveEnemy implements Runnable {
 	private int upmax = 0;
 	private int downmax = 0;
 	private Thread thread;
-	private Background background;
-	private MyFrame myFrame;
+	private Background Background;
 	private boolean isPaused = false;
 
 	public int getX() {
@@ -97,29 +96,21 @@ public class MoveEnemy implements Runnable {
 	}
 
 	public Background getBackground() {
-		return background;
+		return Background;
 	}
 
-	public void setBackground(Background background) {
-		this.background = background;
+	public void setBackground(Background Background) {
+		this.Background = Background;
 	}
 
 	public void setPaused(boolean paused) {
 		this.isPaused = paused;
 	}
 
-	public void setMyFrame(MyFrame myFrame) {
-		this.myFrame = myFrame;
-	}
-
 	public void dead() {
-		this.image = Staticvalues.trangel.get(2); // Устанавливаем изображение смерти
-		if (this.background != null) {
-			this.background.enemy.remove(this); // Удаляем врага из списка
-		}
-		if (myFrame != null) {
-			myFrame.repaint(); // Перерисовываем экран для отображения изменений
-		}
+		this.image = Staticvalues.trangel.get(2);
+		this.Background.enemy.remove(this);
+		this.Background.remove.add(this);
 	}
 
 	@Override
@@ -144,8 +135,8 @@ public class MoveEnemy implements Runnable {
 				imagetype = (imagetype == 0) ? 1 : 0;
 				this.image = Staticvalues.trangel.get(imagetype);
 
-				for (int i = 0; i < this.background.obstraction.size(); i++) {
-					Enemy ob = background.obstraction.get(i);
+				for (int i = 0; i < this.Background.obstraction.size(); i++) {
+					Enemy ob = Background.obstraction.get(i);
 
 					if (ob.getX() == this.x + 60 &&
 							(ob.getY() + 50 > this.y && ob.getY() - 50 < this.y)) {
@@ -188,35 +179,28 @@ public class MoveEnemy implements Runnable {
 		}
 	}
 
-	public void reset() {
-	}
-	public MoveEnemy(int x, int y, boolean isleft, int type, Background background) {
+	public MoveEnemy(int x, int y, boolean isleft, int type, Background Background) {
 		this.x = x;
 		this.y = y;
 		this.isleftorup = isleft;
 		this.type = type;
-		this.background = background;
-		// if (background != null && background.getMyFrame() != null) {
-		//     this.myFrame = background.getMyFrame();
-		// }
+		this.Background = Background;
 		if (type == 1) {
 			this.image = Staticvalues.trangel.get(0);
 		}
 		thread = new Thread(this);
 		thread.start();
 	}
+
 	public MoveEnemy(int x, int y, boolean isup, int type, int upmax,
-					 int downmax, Background background) {
+					 int downmax, Background Background) {
 		this.x = x;
 		this.y = y;
 		this.isleftorup = isup;
 		this.type = type;
 		this.upmax = upmax;
 		this.downmax = downmax;
-		this.background = background;
-		// if (background != null && background.getMyFrame() != null) {
-		//     this.myFrame = background.getMyFrame();
-		// }
+		this.Background = Background;
 		if (type == 2) {
 			this.image = Staticvalues.flower.get(0);
 		}

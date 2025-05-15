@@ -21,11 +21,11 @@ public class Background {
 	}
 
 	public boolean isFlag() {
-		return flag;
+		return isLastLevel;
 	}
 
-	public void setFlag(boolean flag) {
-		this.flag = flag;
+	public void setFlag(boolean isLastLevel) {
+		this.isLastLevel = isLastLevel;
 	}
 
 	public ArrayList getEnemy() {
@@ -56,25 +56,20 @@ public class Background {
 		this.isOver = isOver;
 	}
 
-	private boolean isDown = false;
-
-	public boolean isDown() {
-		return isDown;
-	}
-
 	public Image backgroundImage = null;
 	private int sort;
-	private boolean flag;
+	private boolean isLastLevel;
 	ArrayList enemy = new ArrayList<>();
 	ArrayList<Enemy> obstraction = new ArrayList<>();
 	ArrayList<Enemy> removedenemy = new ArrayList<>();
 	ArrayList<MoveEnemy> remove = new ArrayList<>();
 	Turtle Turtle = null;
 
-	public Background(int sort, boolean flag) {
+
+	public Background(int sort, boolean isLastLevel) {
 		this.sort = sort;
-		this.flag = flag;
-		if (flag) {
+		this.isLastLevel = isLastLevel;
+		if (isLastLevel) {
 			backgroundImage = Staticvalues.end;
 		} else {
 			backgroundImage = Staticvalues.bgImage;
@@ -157,4 +152,5 @@ public class Background {
 			}
 		}
 	}
+
 }
