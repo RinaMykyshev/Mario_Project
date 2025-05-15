@@ -224,7 +224,7 @@ public class Mario implements Runnable {
 							this.Background.obstraction.remove(ob);
 							this.Background.removedenemy.add(ob);
 						} else if (ob.getType() == 4) {
-							ScoreManager.getInstance().addScore(100);
+							ScoreManager.getInstance().addScore(250);
 							ob.setType(2);
 							ob.setImage();
 						}
