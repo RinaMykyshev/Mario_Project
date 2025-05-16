@@ -113,17 +113,27 @@ public class Mario implements Runnable {
 		this.status = "right-standing";
 	}
 
+	private boolean isOnGround = true;
+
+	public boolean isOnGround() {
+		return this.y >= 480;
+	}
+
 	public boolean isOnSurface() {
 		if (this.y + 60 >= 480) {
+			System.out.println("On ground: y = " + y);
 			return true;
 		}
 		for (Enemy ob : Background.obstraction) {
+			System.out.println("Checking block: y = " + ob.getY() + ", x = " + ob.getX());
 			if (this.y + 60 >= ob.getY() && this.y + 60 <= ob.getY() + 10 &&
 					this.x + 50 > ob.getX() &&
 					this.x < ob.getX() + 50) {
+				System.out.println("On block: Mario y = " + y + ", block y = " + ob.getY() + ", block x = " + ob.getX() + ", Mario x = " + x);
 				return true;
 			}
 		}
+		System.out.println("Not on surface: y = " + y);
 		return false;
 	}
 
@@ -137,10 +147,11 @@ public class Mario implements Runnable {
 			}
 			ymove = -10;
 			time = 18;
-
+			System.out.println("Jump initiated: status = " + status + ", y = " + y + ", isOnSurface = " + isOnSurface());
+		} else {
+			System.out.println("Jump blocked: status = " + status + ", isOnSurface = " + isOnSurface());
 		}
-		}
-
+	}
 
 	public void down() {
 		if (this.status.indexOf("left") != -1) {
@@ -180,6 +191,8 @@ public class Mario implements Runnable {
 				continue;
 			}
 
+			isOnGround = (this.y >= 480);
+
 			if (!die) {
 				try {
 					Thread.sleep(50);
@@ -218,18 +231,22 @@ public class Mario implements Runnable {
 							&& ob.getX() - 50 < this.x) {
 						jumb = true;
 					}
-					if (ob.getY() == this.y - 60
-							&& (ob.getX() + 50 > this.x && ob.getX() - 50 < this.x)) {
-						if (ob.getType() == 0) {
+					if (ob.getY() == this.y - 60 && (ob.getX() + 50 > this.x && ob.getX() - 50 < this.x)) {
+						if (ob.getType() == 4) { // Исправлено: бонусный блок имеет тип 4
 							this.Background.obstraction.remove(ob);
 							this.Background.removedenemy.add(ob);
-						} else if (ob.getType() == 4) {
-							ScoreManager.getInstance().addScore(200);
+							ScoreManager.getInstance().addScore(100); // 100 очков за подбитие бонусного блока
+						} else if (ob.getType() == 0) {
+							this.Background.obstraction.remove(ob);
+							this.Background.removedenemy.add(ob);
+						}
+						if (ob.getType() == 4 || ob.getType() == 3 && time > 0) {
 							ob.setType(2);
 							ob.setImage();
 						}
 						time = 0;
 						ymove = 0;
+						System.out.println("Hit block: setting time = 0, ymove = 0, status = " + status + ", y = " + y);
 					}
 				}
 				if (jumb && time == 0) {
@@ -247,6 +264,7 @@ public class Mario implements Runnable {
 						}
 					}
 					ymove = 0;
+					System.out.println("Jump ended: status = " + status + ", y = " + y + ", ymove = " + ymove);
 				} else {
 					if (time != 0) {
 						time -= 1;
@@ -293,6 +311,7 @@ public class Mario implements Runnable {
 							e.dead();
 							this.time = 10;
 							this.ymove = -5;
+							ScoreManager.getInstance().addScore(100); // Добавляем очки за уничтожение врага
 						} else if (e.getType() == 2) {
 							this.dead();
 						}

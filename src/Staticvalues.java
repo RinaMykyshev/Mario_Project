@@ -1,6 +1,7 @@
 import java.awt.Image;
 import java.io.File;
 import java.util.*;
+
 import javax.imageio.ImageIO;
 
 public class Staticvalues {
@@ -45,5 +46,6 @@ public class Staticvalues {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }
