@@ -231,9 +231,12 @@ public class Mario implements Runnable {
 							&& ob.getX() - 50 < this.x) {
 						jumb = true;
 					}
-					if (ob.getY() == this.y - 60
-							&& (ob.getX() + 50 > this.x && ob.getX() - 50 < this.x)) {
-						if (ob.getType() == 0) {
+					if (ob.getY() == this.y - 60 && (ob.getX() + 50 > this.x && ob.getX() - 50 < this.x)) {
+						if (ob.getType() == 4) { // Исправлено: бонусный блок имеет тип 4
+							this.Background.obstraction.remove(ob);
+							this.Background.removedenemy.add(ob);
+							ScoreManager.getInstance().addScore(100); // 100 очков за подбитие бонусного блока
+						} else if (ob.getType() == 0) {
 							this.Background.obstraction.remove(ob);
 							this.Background.removedenemy.add(ob);
 						}
@@ -308,6 +311,7 @@ public class Mario implements Runnable {
 							e.dead();
 							this.time = 10;
 							this.ymove = -5;
+							ScoreManager.getInstance().addScore(100); // Добавляем очки за уничтожение врага
 						} else if (e.getType() == 2) {
 							this.dead();
 						}
