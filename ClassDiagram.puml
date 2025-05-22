@@ -1,0 +1,80 @@
+@startuml
+class Staticvalues {
+    + mariao: ArrayList<Image>
+    + start: Image
+    + end: Image
+    + bgImage: Image
+    + flower: ArrayList<Image>
+    + trangel: ArrayList<Image>
+    + turtel: ArrayList<Image>
+    + obstruction: ArrayList<Image>
+    + die: Image
+    + init(): void
+    // Циклы в методе init():
+    // 1. Цикл от 1 до 10 для загрузки изображений Марио в mariao.
+    // 2. Цикл от 1 до 5 для загрузки изображений врагов (flower, trangel, turtel).
+    // 3. Цикл от 1 до 12 для загрузки изображений препятствий в obstruction.
+}
+
+class Mario {
+    + move(): void
+    + jump(): void
+    + dead(): void
+}
+
+class Background {
+    + render(): void
+    + update(): void
+    + addEnemy(Enemy e): void
+}
+
+class Enemy {
+    + x: int
+    + y: int
+    + type: int
+    + setImage(Image img): void
+}
+
+class Turtle {
+    + move(): void
+    + animate(): void
+}
+
+class MoveEnemy {
+    + run(): void
+    + stop(): void
+}
+
+class MyFrame {
+    + startGame(): void
+    + gameOver(): void
+    + gameWin(): void
+}
+
+class ScoreManager {
+    + addScore(int points): void
+    + resetScore(): void
+    + getScore(): int
+}
+
+class ScoreObserver {
+    + onScoreChanged(int newScore): void
+}
+
+class ScoreDisplay {
+    + paintComponent(Graphics g): void
+    + onScoreChanged(int newScore): void
+}
+
+Staticvalues <-- Mario : uses
+Staticvalues <-- Background : uses
+Staticvalues <-- Turtle : uses
+Staticvalues <-- MoveEnemy : uses
+Background --> Enemy : contains
+Background --> Turtle : contains
+Background --> MoveEnemy : contains
+MyFrame --> Background : manages
+MyFrame --> Mario : manages
+ScoreManager --> ScoreObserver : notifies
+ScoreObserver <|-- ScoreDisplay
+@enduml
