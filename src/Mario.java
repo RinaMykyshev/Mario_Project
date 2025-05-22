@@ -120,6 +120,7 @@ public class Mario implements Runnable {
 	}
 
 	public boolean isOnSurface() {
+<<<<<<< HEAD
 		// Проверяем только область под ногами Марио (центр и края)
 		int footY = this.y + 60;
 		int[] checkPoints = {this.x + 5, this.x + 25, this.x + 45}; // лево, центр, право
@@ -133,6 +134,23 @@ public class Mario implements Runnable {
 		}
 		// Если ниже пола — тоже на поверхности
 		return footY >= 540;
+=======
+		if (this.y + 60 >= 480) {
+			System.out.println("On ground: y = " + y);
+			return true;
+		}
+		for (Enemy ob : Background.obstraction) {
+			System.out.println("Checking block: y = " + ob.getY() + ", x = " + ob.getX());
+			if (this.y + 60 >= ob.getY() && this.y + 60 <= ob.getY() + 10 &&
+					this.x + 50 > ob.getX() &&
+					this.x < ob.getX() + 50) {
+				System.out.println("On block: Mario y = " + y + ", block y = " + ob.getY() + ", block x = " + ob.getX() + ", Mario x = " + x);
+				return true;
+			}
+		}
+		System.out.println("Not on surface: y = " + y);
+		return false;
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
 	}
 
 	public void jump() {
@@ -145,7 +163,13 @@ public class Mario implements Runnable {
 			}
 			ymove = -10;
 			time = 18;
+<<<<<<< HEAD
 		} else {
+=======
+			System.out.println("Jump initiated: status = " + status + ", y = " + y + ", isOnSurface = " + isOnSurface());
+		} else {
+			System.out.println("Jump blocked: status = " + status + ", isOnSurface = " + isOnSurface());
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
 		}
 	}
 
@@ -228,10 +252,17 @@ public class Mario implements Runnable {
 						jumb = true;
 					}
 					if (ob.getY() == this.y - 60 && (ob.getX() + 50 > this.x && ob.getX() - 50 < this.x)) {
+<<<<<<< HEAD
 						if (ob.getType() == 4) {
 							this.Background.obstraction.remove(ob);
 							this.Background.removedenemy.add(ob);
 							ScoreManager.getInstance().addScore(100);
+=======
+						if (ob.getType() == 4) { // Исправлено: бонусный блок имеет тип 4
+							this.Background.obstraction.remove(ob);
+							this.Background.removedenemy.add(ob);
+							ScoreManager.getInstance().addScore(100); // 100 очков за подбитие бонусного блока
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
 						} else if (ob.getType() == 0) {
 							this.Background.obstraction.remove(ob);
 							this.Background.removedenemy.add(ob);
@@ -242,6 +273,10 @@ public class Mario implements Runnable {
 						}
 						time = 0;
 						ymove = 0;
+<<<<<<< HEAD
+=======
+						System.out.println("Hit block: setting time = 0, ymove = 0, status = " + status + ", y = " + y);
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
 					}
 				}
 				if (jumb && time == 0) {
@@ -258,7 +293,13 @@ public class Mario implements Runnable {
 							status = "right-standing";
 						}
 					}
+<<<<<<< HEAD
 					ymove = 0;} else {
+=======
+					ymove = 0;
+					System.out.println("Jump ended: status = " + status + ", y = " + y + ", ymove = " + ymove);
+				} else {
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
 					if (time != 0) {
 						time -= 1;
 					} else {
@@ -304,7 +345,11 @@ public class Mario implements Runnable {
 							e.dead();
 							this.time = 10;
 							this.ymove = -5;
+<<<<<<< HEAD
 							ScoreManager.getInstance().addScore(100);
+=======
+							ScoreManager.getInstance().addScore(100); // Добавляем очки за уничтожение врага
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
 						} else if (e.getType() == 2) {
 							this.dead();
 						}

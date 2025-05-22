@@ -111,18 +111,26 @@ public class Background {
 
 			this.enemy.add(new MoveEnemy(690, 540, true, 2, 420, 540, this));
 
+<<<<<<< HEAD
 			// Верхняя часть трубы
             this.obstraction.add(new Enemy(660, 480, 6));
             this.obstraction.add(new Enemy(720, 480, 5));
             // Нижняя часть трубы (убираем с земли)
             // this.obstraction.add(new Enemy(660, 540, 6)); // УДАЛЕНО
             // this.obstraction.add(new Enemy(720, 540, 5)); // УДАЛЕНО
+=======
+			this.obstraction.add(new Enemy(660, 540, 6));
+			this.obstraction.add(new Enemy(720, 540, 5));
+			this.obstraction.add(new Enemy(660, 480, 8));
+			this.obstraction.add(new Enemy(720, 480, 7));
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
 
 			this.enemy.add(new MoveEnemy(600, 480, true, 1, this));
 		}
 		if (sort == 2) {
 			for (int i = 0; i < 15; i++) {
 				if (i != 10) {
+<<<<<<< HEAD
 					this.obstraction.add(GameObjectFactory.createEnemy(i * 60, 540, 9));
 				}
 			}
@@ -154,6 +162,34 @@ public class Background {
             this.enemy.add(new MoveEnemy(90, 540, true, 2, 350, 540, this));
             this.enemy.add(new MoveEnemy(270, 540, true, 2, 300, 400, this));
             Turtle = new Turtle(680, 480);
+=======
+					this.obstraction.add(new Enemy(i * 60, 540, 9));
+				}
+			}
+			this.obstraction.add(new Enemy(60, 540, 6));
+			this.obstraction.add(new Enemy(120, 540, 5));
+			this.obstraction.add(new Enemy(60, 480, 6));
+			this.obstraction.add(new Enemy(120, 480, 5));
+			this.obstraction.add(new Enemy(60, 420, 8));
+			this.obstraction.add(new Enemy(120, 420, 7));
+
+			this.obstraction.add(new Enemy(240, 540, 6));
+			this.obstraction.add(new Enemy(300, 540, 5));
+			this.obstraction.add(new Enemy(240, 480, 6));
+			this.obstraction.add(new Enemy(300, 480, 5));
+			this.obstraction.add(new Enemy(240, 420, 6));
+			this.obstraction.add(new Enemy(300, 420, 5));
+			this.obstraction.add(new Enemy(240, 360, 8));
+			this.obstraction.add(new Enemy(300, 360, 7));
+
+			this.obstraction.add(new Enemy(480, 360, 4));
+			this.obstraction.add(new Enemy(540, 360, 0));
+			this.obstraction.add(new Enemy(420, 180, 0));
+
+			this.enemy.add(new MoveEnemy(90, 540, true, 2, 350, 540, this));
+			this.enemy.add(new MoveEnemy(270, 540, true, 2, 300, 400, this));
+			Turtle = new Turtle(680, 480);
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
 		}
 		if (sort == 3) {
 			for (int i = 0; i < 15; i++) {
@@ -165,6 +201,7 @@ public class Background {
 	}
 
 	public void reset() {
+<<<<<<< HEAD
         enemy.clear();
         obstraction.clear();
         removedenemy.clear();
@@ -237,4 +274,18 @@ public class Background {
             this.obstraction.add(new Enemy(520, 480, 2));
         }
     }
+=======
+		enemy.clear();
+		obstraction.clear();
+		removedenemy.clear();
+		remove.clear();
+		Turtle = null;
+
+		if (sort == 1) {
+			for (int i = 0; i < 15; i++) {
+				this.obstraction.add(new Enemy(i * 60, GROUND_Y, BLOCK_TYPE));
+			}
+		}
+	}
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
 }

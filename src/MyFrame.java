@@ -25,6 +25,10 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 	private ArrayList<Background> Backgrounds = new ArrayList<>();
 	private Background Backgroundnow = null;
 	private Mario mario;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
 	private Clip backgroundClip;
 
 	private JDialog gameOverDialog;
@@ -98,7 +102,12 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 	}
 
 	private void paintGame(Graphics graphics) {
+<<<<<<< HEAD
 		BufferedImage bufferedImage = new BufferedImage(900, 600,				BufferedImage.TYPE_3BYTE_BGR);
+=======
+		BufferedImage bufferedImage = new BufferedImage(900, 600,
+				BufferedImage.TYPE_3BYTE_BGR);
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
 		Graphics graphics2 = bufferedImage.getGraphics();
 		graphics2.drawImage(this.Backgroundnow.getBackgroundImage(), 0, 0, this);
 

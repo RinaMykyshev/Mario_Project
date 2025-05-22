@@ -21,6 +21,10 @@ public class Staticvalues {
                 Image image = ImageIO.read(new File("images//" + i + ".gif"));
                 mariao.add(image);
             }
+<<<<<<< HEAD
+=======
+            start = ImageIO.read(new File("images//start.gif"));
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
             end = ImageIO.read(new File("images//firststageend.gif"));
             bgImage = ImageIO.read(new File("images//firststage.gif"));
             for (int i = 1; i <= 5; i++) {
