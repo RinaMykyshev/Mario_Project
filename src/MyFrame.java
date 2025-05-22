@@ -1,6 +1,5 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -25,7 +24,6 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 	private ArrayList<Background> Backgrounds = new ArrayList<>();
 	private Background Backgroundnow = null;
 	private Mario mario;
-
 	private Clip backgroundClip;
 
 	private JDialog gameOverDialog;
@@ -54,27 +52,25 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 		gamePanel.setOpaque(true);
 		layeredPane.add(gamePanel, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
+		// Вместо обычного ScoreDisplay используем декоратор
+		ScoreDisplay scoreDisplay = new ScoreDisplay();
+		ScoreDisplayComponent decoratedScore = new BorderedScoreDisplay(scoreDisplay);
+
 		JPanel scorePanel = new JPanel() {
 			@Override
 			protected void paintComponent(Graphics g) {
 				g.setColor(new Color(0, 0, 0, 128));
 				g.fillRect(0, 0, getWidth(), getHeight());
 				super.paintComponent(g);
+				decoratedScore.draw(g);
 			}
 		};
 		scorePanel.setOpaque(false);
 		scorePanel.setBounds(10, 10, 120, 40);
 		scorePanel.setLayout(new BorderLayout());
-		
-		scoreLabel = new JLabel("Score: 0");
-		scoreLabel.setForeground(Color.WHITE);
-		scoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
-		scoreLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-		
-		scorePanel.add(scoreLabel, BorderLayout.CENTER);
 		layeredPane.add(scorePanel, javax.swing.JLayeredPane.POPUP_LAYER);
 		
-		ScoreManager.getInstance().addObserver(this);
+		ScoreManager.getInstance().addObserver(this); // обсервер паттерн
 		
 		Staticvalues.init();
 		Backgroundnow = new Background(0, false);
@@ -83,15 +79,15 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 		}
 		this.Backgroundnow = Backgrounds.get(0);
 		mario = new Mario(0, 480);
-		mario.setBackground(Backgroundnow);
+		mario.setBackground(Backgroundnow); // спавн
 		mario.setMyFrame(this);
-		this.repaint();
-		this.addKeyListener(new key());
+		this.repaint(); // перерисовка окна
+		this.addKeyListener(new key()); // обработчик клавищ
 		Thread thread = new Thread(this);
 		thread.start();
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // закрытие
 		this.setVisible(true);
-		this.setResizable(false);
+		this.setResizable(false); // запрещаем изменять размер окна
 
 		createGameOverDialog();
 		createGameWinDialog();
@@ -99,10 +95,10 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 	}
 
 	private void paintGame(Graphics graphics) {
-		BufferedImage bufferedImage = new BufferedImage(900, 600,
+		BufferedImage bufferedImage = new BufferedImage(900, 600,  // буфферизация чтобы игра не мерцала, делает игру плавным
 				BufferedImage.TYPE_3BYTE_BGR);
 		Graphics graphics2 = bufferedImage.getGraphics();
-		graphics2.drawImage(this.Backgroundnow.getBackgroundImage(), 0, 0, this);
+		graphics2.drawImage(this.Backgroundnow.getBackgroundImage(), 0, 0, this); // на весь буффер рисуются бэкраунд сценка
 
 		java.util.Iterator<MoveEnemy> iterator2 = this.Backgroundnow.enemy
 				.iterator();
@@ -137,20 +133,19 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 	}
 
 	class key implements KeyListener {
-
 		private boolean jumpSoundPlayed = false;
 		private boolean isJumping = false;
-
 		private JDialog menuDialog;
+		private Map<Integer, Command> commands;
 
 		public key() {
-
 			menuDialog = new JDialog(MyFrame.this, "Меню", true);
 			menuDialog.setSize(300, 200);
 			menuDialog.setLayout(new BoxLayout(menuDialog.getContentPane(), BoxLayout.Y_AXIS));
 			menuDialog.setLocationRelativeTo(MyFrame.this);
 
-			JButton continueButton = new JButton("Продолжить игру");			continueButton.addActionListener(e -> {
+			JButton continueButton = new JButton("Продолжить игру");
+			continueButton.addActionListener(e -> {
 				setGamePaused(false);
 				menuDialog.setVisible(false);
 				resumeBackgroundMusic();
@@ -161,11 +156,19 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 
 			menuDialog.add(continueButton);
 			menuDialog.add(exitButton);
+
+			updateCommands();
+		}
+
+		private void updateCommands() {
+			commands = new HashMap<>();
+			commands.put(KeyEvent.VK_RIGHT, new MarioCommands.MoveRightCommand(mario));
+			commands.put(KeyEvent.VK_LEFT, new MarioCommands.MoveLeftCommand(mario));
+			commands.put(KeyEvent.VK_SPACE, new MarioCommands.JumpCommand(mario));
 		}
 
 		@Override
 		public void keyTyped(KeyEvent e) {
-
 		}
 
 		@Override
@@ -173,22 +176,19 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 			if (isPaused) {
 				return;
 			}
-			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-				MyFrame.this.mario.rightMove();
+
+			Command command = commands.get(e.getKeyCode());
+			if (command != null) {
+				command.execute();
+				if (e.getKeyCode() == KeyEvent.VK_SPACE && !jumpSoundPlayed && !isJumping) {
+					playSound("sounds/jump.wav");
+					jumpSoundPlayed = true;
+					isJumping = true;
+				}
 			}
-			if (e.getKeyCode() == 37) {
-				MyFrame.this.mario.leftMove();
-			}
-			if (e.getKeyCode() == 32 && !jumpSoundPlayed && !isJumping) {
-				MyFrame.this.mario.jump();
-				playSound("sounds/jump.wav");
-				jumpSoundPlayed = true;
-				isJumping = true;
-			}
+
 			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-
 				setGamePaused(!isPaused);
-
 				if (isPaused) {
 					pauseBackgroundMusic();
 					menuDialog.setVisible(true);
@@ -200,7 +200,7 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 		}
 
 		@Override
-		public void keyReleased(KeyEvent e) {
+		public void keyReleased(KeyEvent e) {  // фкнция отпускание клавиш
 			if (e.getKeyCode() == 39) {
 				MyFrame.this.mario.rightstop();
 			}
@@ -357,6 +357,9 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 			mario.setBackground(Backgroundnow);
 			mario.setMyFrame(this);
 
+			// Обновляем команды после создания нового Марио
+			((key) this.getKeyListeners()[0]).updateCommands();
+
 			playBackgroundSound("sounds/background.wav");
 
 			setGamePaused(false);
@@ -425,6 +428,6 @@ public class MyFrame extends JFrame implements Runnable, ScoreObserver {
 
 	@Override
 	public void onScoreChanged(int newScore) {
-		scoreLabel.setText("Score: " + newScore);
+		// scoreLabel больше не используется, обновление счета происходит через декоратор
 	}
 }

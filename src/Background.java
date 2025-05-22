@@ -121,18 +121,14 @@ public class Background {
 		if (sort == 2) {
 			for (int i = 0; i < 15; i++) {
 				if (i != 10) {
-					this.obstraction.add(new Enemy(i * 60, 540, 9));
+					this.obstraction.add(GameObjectFactory.createEnemy(i * 60, 540, 9));
 				}
 			}
-			this.obstraction.add(new Enemy(60, 540, 6));
-			this.obstraction.add(new Enemy(120, 540, 5));
 			this.obstraction.add(new Enemy(60, 480, 6));
 			this.obstraction.add(new Enemy(120, 480, 5));
 			this.obstraction.add(new Enemy(60, 420, 8));
 			this.obstraction.add(new Enemy(120, 420, 7));
 
-			this.obstraction.add(new Enemy(240, 540, 6));
-			this.obstraction.add(new Enemy(300, 540, 5));
 			this.obstraction.add(new Enemy(240, 480, 6));
 			this.obstraction.add(new Enemy(300, 480, 5));
 			this.obstraction.add(new Enemy(240, 420, 6));

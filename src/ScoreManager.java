@@ -2,13 +2,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScoreManager {
-    private static ScoreManager instance;
+    private static ScoreManager instance;  //статический экземпляр для синглтон
     private int score = 0;
-    private List<ScoreObserver> observers = new ArrayList<>();
+    private List<ScoreObserver> observers = new ArrayList<>();  // список набл
 
     private ScoreManager() {}
 
-    public static ScoreManager getInstance() {
+    public static ScoreManager getInstance() {     // получить единственный экземпляр
         if (instance == null) {
             instance = new ScoreManager();
         }
@@ -32,9 +32,9 @@ public class ScoreManager {
         notifyObservers();
     }
 
-    private void notifyObservers() {
-        for (ScoreObserver observer : observers) {
-            observer.onScoreChanged(score);
+    private void notifyObservers() {   //уводемляет всех наблюдателей
+        for (ScoreObserver observer : observers) { // каждого уводемляет
+            observer.onScoreChanged(score);  // обновляет
         }
     }
 

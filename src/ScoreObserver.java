@@ -1,4 +1,4 @@
 
 public interface ScoreObserver {
-    void onScoreChanged(int newScore);
+    void onScoreChanged(int newScore); //вызывает метод изменений счета
 } 

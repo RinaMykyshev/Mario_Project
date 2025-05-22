@@ -26,11 +26,20 @@ public class Mario implements Runnable {
 	}
 
 	public Image getImage() {
-		return image;
-	}
-
-	public void setImage(Image image) {
-		this.image = image;
+		if (!die) {
+			return Staticvalues.die;
+		}
+		int temp = 0;
+		if (status.contains("left")) {
+			temp += 5;
+		}
+		if (status.contains("moving")) {
+			temp += p;
+		}
+		if (status.contains("jumping")) {
+			temp += 4;
+		}
+		return Staticvalues.mariao.get(temp);
 	}
 
 	private int x;
@@ -39,7 +48,7 @@ public class Mario implements Runnable {
 	private Image image;
 	public int xmove = 0;
 	public int ymove = 0;
-	private int p = 0;
+	int p = 0;
 	private int a = 1;
 	public int time = 0;
 	public Thread thread = null;
@@ -75,10 +84,10 @@ public class Mario implements Runnable {
 	public Mario(int x, int y) {
 		this.x = x;
 		this.y = y;
-		image = Staticvalues.mariao.get(0);
 		this.score = 0;
 		this.lift = 3;
 		this.status = "right-standing";
+		this.image = Staticvalues.mariao.get(0);
 		thread = new Thread(this);
 		thread.start();
 	}
@@ -121,19 +130,15 @@ public class Mario implements Runnable {
 
 	public boolean isOnSurface() {
 		if (this.y + 60 >= 480) {
-			System.out.println("On ground: y = " + y);
 			return true;
 		}
 		for (Enemy ob : Background.obstraction) {
-			System.out.println("Checking block: y = " + ob.getY() + ", x = " + ob.getX());
 			if (this.y + 60 >= ob.getY() && this.y + 60 <= ob.getY() + 10 &&
 					this.x + 50 > ob.getX() &&
 					this.x < ob.getX() + 50) {
-				System.out.println("On block: Mario y = " + y + ", block y = " + ob.getY() + ", block x = " + ob.getX() + ", Mario x = " + x);
 				return true;
 			}
 		}
-		System.out.println("Not on surface: y = " + y);
 		return false;
 	}
 
@@ -147,9 +152,7 @@ public class Mario implements Runnable {
 			}
 			ymove = -10;
 			time = 18;
-			System.out.println("Jump initiated: status = " + status + ", y = " + y + ", isOnSurface = " + isOnSurface());
 		} else {
-			System.out.println("Jump blocked: status = " + status + ", isOnSurface = " + isOnSurface());
 		}
 	}
 
@@ -246,7 +249,6 @@ public class Mario implements Runnable {
 						}
 						time = 0;
 						ymove = 0;
-						System.out.println("Hit block: setting time = 0, ymove = 0, status = " + status + ", y = " + y);
 					}
 				}
 				if (jumb && time == 0) {
@@ -263,9 +265,7 @@ public class Mario implements Runnable {
 							status = "right-standing";
 						}
 					}
-					ymove = 0;
-					System.out.println("Jump ended: status = " + status + ", y = " + y + ", ymove = " + ymove);
-				} else {
+					ymove = 0;} else {
 					if (time != 0) {
 						time -= 1;
 					} else {
@@ -344,5 +344,13 @@ public class Mario implements Runnable {
 		this.isPaused = false;
 		this.xmove = 0;
 		this.ymove = 0;
+	}
+
+	public void gameOver() {
+		dead();
+	}
+
+	public int getAnimationFrame() {
+		return p;
 	}
 }
