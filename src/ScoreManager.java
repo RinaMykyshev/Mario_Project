@@ -42,4 +42,8 @@ public class ScoreManager {
         score = 0;
         notifyObservers();
     }
+<<<<<<< HEAD
+}
+=======
 } 
+>>>>>>> 5beaa6b2937da85637c9c75c5a5244d9dfd06447
